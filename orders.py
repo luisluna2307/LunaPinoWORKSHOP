@@ -49,11 +49,14 @@ def process_order(token, items, coupon=None, shipping="standard", log=[]):
         return None
 
 
-def print_invoice(username, items):
-    print("==============================")
-    print("BOOKSTORE INVOICE")
+SEPARATOR = "=============================="
+
+
+def print_document(title, username, items, footer=None):
+    print(SEPARATOR)
+    print("BOOKSTORE " + title)
     print("Customer: " + username)
-    print("==============================")
+    print(SEPARATOR)
     subtotal = 0
     for item in items:
         book = database.get_book(item["book_id"])
@@ -64,26 +67,17 @@ def print_invoice(username, items):
     print("Subtotal: " + str(round(subtotal, 2)))
     print("Tax: " + str(round(tax, 2)))
     print("Total: " + str(round(subtotal + tax, 2)))
-    print("==============================")
+    if footer:
+        print(footer)
+    print(SEPARATOR)
+
+
+def print_invoice(username, items):
+    print_document("INVOICE", username, items)
 
 
 def print_quote(username, items):
-    print("==============================")
-    print("BOOKSTORE QUOTE")
-    print("Customer: " + username)
-    print("==============================")
-    subtotal = 0
-    for item in items:
-        book = database.get_book(item["book_id"])
-        line_total = book[2] * item["qty"]
-        subtotal = subtotal + line_total
-        print(book[1] + " x" + str(item["qty"]) + " = " + str(line_total))
-    tax = subtotal * TAX
-    print("Subtotal: " + str(round(subtotal, 2)))
-    print("Tax: " + str(round(tax, 2)))
-    print("Total: " + str(round(subtotal + tax, 2)))
-    print("This quote is valid for 7 days.")
-    print("==============================")
+    print_document("QUOTE", username, items, "This quote is valid for 7 days.")
 
 
 def cancel_order(order_id):
